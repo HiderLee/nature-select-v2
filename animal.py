@@ -57,9 +57,13 @@ class Animal:
         self.attack_ready = True
         self.attack_cooltime = 0
 
+        self.damage_motion_time = 0
+        self.damage_motion_apear = False
+
     def attack(self, object):
         if self.attack_ready:
             object.life -= ANIMAL_DAMAGE
+            object.damage_motion_apear=True
             self.attack_cooltime = ANIMAL_DAMAGE_COOLTIME
             self.attack_ready = False
 
@@ -75,6 +79,7 @@ class Animal:
             if poison > self.gene.poison_res*POISON_RESIST_BALANCE:
                 self.life -= POISON_DAMAGE
                 self.poison_time = POISON_TIME
+                self.damage_motion_apear = True
         self.poison_time -= 1
         self.attack_cooltime -= 1
         if self.attack_cooltime and not self.attack_ready < 0:
@@ -125,12 +130,24 @@ class Animal:
             for _ in range(self.gene.child_num):
                 self.survivors.append(type(self)(self.gene, self.id, (self.pos.x, self.pos.y)))
             self.energy = self.gene.child_caution
+
+    def damage_motion(self, screen):
+        if self.damage_motion_apear:
+            for rect in self.rect_box:
+                pygame.draw.rect(screen, DAMAGE_MOTION_COLOR, rect, width=DAMAGE_MOTION_WIDTH)
+            self.damage_motion_time += 1
+            if self.damage_motion_time > DAMAGE_MOTION_TIME:
+                self.damage_motion_time = 0
+                self.damage_motion_apear = False
+
     def display(self, screen):
         for rect in self.rect_box:
             pygame.draw.rect(screen, self.color, rect)
         pygame.draw.rect(screen, self.color, self.sight_rect, width=2)
         if self.poison_time > 0:
             pygame.draw.circle(screen, (0, 255,0), self.rect_box[0].center, POISON_EFFECT_SIZE, width=POISON_EFFECT_WIDTH)
+        self.damage_motion(screen=screen)
+
     def behaviour(self):
         self.collision()
         self.move()
@@ -157,16 +174,24 @@ class B_Animal(Animal):
         elif target_list:=[food.col_rect.center for food in DeadPlant.survivors if self.sight_rect.colliderect(food.col_rect)]:
             self.target.x, self.target.y = min(target_list, key=lambda target_pos: self.pos.distance_squared_to(target_pos))
             self.running_random = False
-      ###아직 plant 구현안함 해야함
+        elif target_list:=[plant.pos for plant in Plant.survivors 
+                           if any(self.sight_rect.colliderect(rect) for rect in plant.rect_box)]:
+            self.target.x, self.target.y = min(target_list, key=lambda target_pos: self.pos.distance_squared_to(target_pos))
+            self.running_random = False
         elif not self.running_random:
             self.target.x, self.target.y = randrange(WIDTH), randrange(HEIGHT)
             self.running_random = True
 
     def collision(self):
-        #여기서 충돌처리를 식물, 죽은식물 동시해처리
         for rect in self.rect_box:
-            pass
-
+            #DeadPlant와 충돌구문
+            for deadplant in DeadPlant.survivors:
+                if rect.colliderect(deadplant.col_rect):
+                    deadplant.eaten(self)
+            #plant와 충돌구문
+            for plant in Plant.survivors:
+                if any(rect.colliderect(other_rect) for other_rect in plant.rect_box):
+                    self.attack(plant)
 
 class R_Animal(Animal):
     #이거 상속한곳에서 구현해야함 make_id

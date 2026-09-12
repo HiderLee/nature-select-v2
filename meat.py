@@ -5,6 +5,7 @@ import pygame
 class BaseMeatPlant:
     survivors = []
     color = (255, 220, 0)
+    energy_per_unit = ENERGY_PER_MEAT
 
     def __init__(self, col_rect, poison): 
         self.col_rect = col_rect
@@ -12,7 +13,7 @@ class BaseMeatPlant:
 
     def eaten(self, consumer):
         self.survivors.remove(self)
-        consumer.energy += ENERGY_PER_MEAT
+        consumer.energy += self.energy_per_unit
         if self.poison > 0:
             consumer.poison_list.append(self.poison)
 
@@ -22,7 +23,9 @@ class BaseMeatPlant:
 class Meat(BaseMeatPlant):
     survivors = []
     color = (255, 220, 0)
+    energy_per_unit = ENERGY_PER_MEAT
 
 class DeadPlant(BaseMeatPlant):
     survivors = []
     color = (100, 100, 100)
+    energy_per_unit = ENERGY_PER_PLANT
