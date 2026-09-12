@@ -17,7 +17,7 @@ ENERGY_PER_MEAT = 90
 #dead_plant 하나당 에너지양
 ENERGY_PER_PLANT = 90
 #독데미지 밸런스
-POISON_DAMAGE = 0
+POISON_DAMAGE = 0.2
 #독쿨타임(여러개 먹은경우 다음 독뎀까지 얼마나 걸릴지 30프레임으로 30당 1초)
 POISON_TIME = 150
 #독 효과 크기, 굵기
@@ -35,16 +35,22 @@ ANIMAL_ENERGY_EFFICIENT = 0.5
 ANIMAL_DAMAGE = 1
 ANIMAL_DAMAGE_COOLTIME = 30
 
+### 식물관련 ###
+#씨앗하고 식물 픽셀크기
+PIXEL_SIZE_SEED = 4
+PIXEL_SIZE_PLANT = 5
+#한픽셀성장하는데 드는시간
+GROWING_TIME = 300
+#씨앗, 식물,색갈
+SEED_COLOR = (100, 100, 0)
+PLANT_COLOR = (0,255,0)
+#씨앗날라가는속도
+SEED_SPEED = 3
+
+
 
 #스탯밸패 (높을수록 사기가됨)
 SPEED_BALANCE = 0.5
 SIGHT_BALACNCE = 6
 POISON_RESIST_BALANCE = 0.5
 
-
-
-###식물관련###
-#씨앗색갈, 크기
-SEED_SIZE = 5
-SEED_COLOR = (100, 100, 0)
-#식물 pixel 크기

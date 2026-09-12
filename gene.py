@@ -81,6 +81,31 @@ class Animal_Gene():
 
 
 
-p_gene = namedtuple("p_gene", [])
+p_gene = namedtuple("p_gene", ["poison", "cold_resist", "hot_resist", "shape",
+                                 "seed_num", "seed_radius", "seed_time"])
 class Plant_Gene:
-    pass
+    state_num = len(p_gene._fields) 
+    def __init__(self, parent=None):
+        if parent == None:
+            self.gene = p_gene(poison=0, cold_resist=randrange(0,5), hot_resist=randrange(0,5), shape=((0,0),),
+                               seed_num=1, seed_radius=5, seed_time=60)
+        else:
+            if randrange(10) >= MUTE_PER:
+                #변이안하면 부모랑같음
+                self.gene = parent.gene
+            else:
+                change = randrange(0, self.state_num)
+                new_state_name = parent.gene._fields[change]
+                if new_state_name == "shape":
+                    new_state = make_shape(parent_shape=parent.gene.shape)
+                else:
+                    new_state = parent.gene[change] + choice((-MUTE_CHANGE, MUTE_CHANGE))
+                    if new_state < 0:
+                        new_state = 0
+                self.gene = parent.gene._replace(**{new_state_name:new_state})
+
+
+    def __getattr__(self, name):
+        return getattr(self.gene, name)
+    def __repr__(self):
+        return repr(self.gene)
