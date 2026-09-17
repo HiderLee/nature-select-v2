@@ -89,6 +89,8 @@ class Plant:
             self.life += 1
 
     def make_seed(self):
+        if len(self.survivors) > 500:
+            return
         if self.energy > self.making_seed_energy:
             for _ in range(self.gene.seed_num):
                 angle = uniform(0, math.tau)
@@ -123,10 +125,11 @@ class Plant:
             if self.damage_motion_time > DAMAGE_MOTION_TIME:
                 self.damage_motion_time = 0
                 self.damage_motion_apear = False
-                
+
     def display(self,screen):
         for rect in self.rect_box:
             pygame.draw.rect(screen, PLANT_COLOR, rect)
+
     def behaviour(self):
         if not self.full_grown:
             self.growing()
